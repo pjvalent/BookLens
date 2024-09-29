@@ -1,4 +1,4 @@
-module github.com/pjvalent/pjvalent/BookLens
+module github.com/pjvalent/BookLens
 
 go 1.23.1
 

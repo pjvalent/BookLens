@@ -9,14 +9,11 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
+	"github.com/pjvalent/BookLens/handlers"
 	"github.com/pjvalent/BookLens/internal/database"
 
 	_ "github.com/lib/pq"
 )
-
-type apiConfig struct {
-	DB *database.Queries
-}
 
 func main() {
 
@@ -39,7 +36,7 @@ func main() {
 		log.Fatal("Can't connect to database.")
 	}
 
-	apiCfg := apiConfig{
+	apiCfg := handlers.ApiConfig{
 		DB: database.New(conn),
 	}
 
@@ -55,9 +52,13 @@ func main() {
 
 	//define a new router for the handler readiness to map to the /healthz path (to check if server is live and running)
 	v1Router := chi.NewRouter()
+
 	//scope the endpoint to only be get
-	v1Router.Get("/healthz", handlers.handlerReadiness)
-	v1Router.Get("/err", handlers.handlerErr)
+	v1Router.Get("/healthz", handlers.HandleReadiness)
+	v1Router.Get("/err", handlers.HandlerErr)
+
+	v1Router.Post("/users", apiCfg.HandlerCreateUser)
+
 	//mount the v1 router to the /v1 path, which itself is mapped to the /healthz path (/v1/ready)
 	router.Mount("/v1", v1Router)
 
@@ -67,7 +68,7 @@ func main() {
 	}
 
 	log.Printf("Starting server on port %v", portString)
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
 	}
