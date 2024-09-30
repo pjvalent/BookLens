@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/pjvalent/BookLens/internal/database"
+	"github.com/pjvalent/BookLens/models"
 )
 
 func (apiCfg *ApiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
@@ -50,5 +51,5 @@ func (apiCfg *ApiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	RespondWithJSON(w, 200, user)
+	RespondWithJSON(w, 200, models.ConvertDbUserToUser(user))
 }
