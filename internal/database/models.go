@@ -12,12 +12,14 @@ import (
 )
 
 type Book struct {
-	ID       uuid.UUID
-	Isbn     string
-	Title    string
-	Author   string
-	NumPages sql.NullInt32
-	Price    sql.NullInt32
+	ID        uuid.UUID
+	Isbn      string
+	Title     string
+	Author    string
+	NumPages  int32
+	Price     int32
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type BooksGenere struct {

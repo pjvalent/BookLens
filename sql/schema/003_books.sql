@@ -4,8 +4,8 @@ CREATE TABLE books (
     isbn VARCHAR(13) NOT NULL UNIQUE,
     title TEXT NOT NULL,
     author TEXT NOT NULL,
-    num_pages INT,
-    price INT
+    num_pages INT NOT NULL,
+    price INT NOT NULL
 );
 
 

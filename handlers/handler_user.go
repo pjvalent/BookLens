@@ -21,7 +21,6 @@ func (apiCfg *ApiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Reques
 		LastName       string `json:"last_name"`
 		Email          string `json:"email"`
 		AccountBalance int64  `json:"account_balance"`
-		ApiKey         string `json:"api_key"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -44,7 +43,6 @@ func (apiCfg *ApiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Reques
 		LastName:       params.LastName,
 		Email:          params.Email,
 		AccountBalance: params.AccountBalance,
-		ApiKey:         params.ApiKey,
 	})
 
 	if err != nil {
@@ -53,5 +51,10 @@ func (apiCfg *ApiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	RespondWithJSON(w, 201, models.ConvertDbUserToUser(user))
+}
+
+func (apiCfg *ApiConfig) HandlerGetUserByApiKey(w http.ResponseWriter, r *http.Request, user database.User) {
 	RespondWithJSON(w, 200, models.ConvertDbUserToUser(user))
+
 }

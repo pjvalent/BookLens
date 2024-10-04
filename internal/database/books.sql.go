@@ -7,26 +7,34 @@ package database
 
 import (
 	"context"
-	"database/sql"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 const createBook = `-- name: CreateBook :one
-INSERT INTO books (isbn, title, author, num_pages, price)
-VALUES ($1, $2, $3, $4, $5)
-RETURNING id, isbn, title, author, num_pages, price
+INSERT INTO books (id, isbn, created_at, updated_at, title, author, num_pages, price)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+RETURNING id, isbn, title, author, num_pages, price, created_at, updated_at
 `
 
 type CreateBookParams struct {
-	Isbn     string
-	Title    string
-	Author   string
-	NumPages sql.NullInt32
-	Price    sql.NullInt32
+	ID        uuid.UUID
+	Isbn      string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Title     string
+	Author    string
+	NumPages  int32
+	Price     int32
 }
 
 func (q *Queries) CreateBook(ctx context.Context, arg CreateBookParams) (Book, error) {
 	row := q.db.QueryRowContext(ctx, createBook,
+		arg.ID,
 		arg.Isbn,
+		arg.CreatedAt,
+		arg.UpdatedAt,
 		arg.Title,
 		arg.Author,
 		arg.NumPages,
@@ -40,6 +48,8 @@ func (q *Queries) CreateBook(ctx context.Context, arg CreateBookParams) (Book, e
 		&i.Author,
 		&i.NumPages,
 		&i.Price,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }

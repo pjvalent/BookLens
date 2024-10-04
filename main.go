@@ -56,8 +56,10 @@ func main() {
 	//scope the endpoint to only be get
 	v1Router.Get("/healthz", handlers.HandleReadiness)
 	v1Router.Get("/err", handlers.HandlerErr)
+	v1Router.Get("/users", apiCfg.MiddlewareAuth(apiCfg.HandlerGetUserByApiKey))
 
 	v1Router.Post("/users", apiCfg.HandlerCreateUser)
+	v1Router.Post("/createBook", apiCfg.MiddlewareAuth(apiCfg.HandlerCreateBook))
 
 	//mount the v1 router to the /v1 path, which itself is mapped to the /healthz path (/v1/ready)
 	router.Mount("/v1", v1Router)
