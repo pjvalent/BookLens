@@ -17,11 +17,12 @@ func (apiCfg *ApiConfig) HandlerCreateBook(w http.ResponseWriter, r *http.Reques
 	// TODO: Update so that account balance can be a dollar value, then convert to cents for storing in the database
 
 	type parameters struct {
-		Isbn     string `json:"isbn"`
-		Title    string `json:"title"`
-		Author   string `json:"author"`
-		NumPages int32  `json:"num_pages"`
-		Price    int32  `json:"price"`
+		Isbn     string   `json:"isbn"`
+		Title    string   `json:"title"`
+		Author   string   `json:"author"`
+		NumPages int32    `json:"num_pages"`
+		Price    int32    `json:"price"`
+		Generes  []string `json:"generes"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -52,6 +53,12 @@ func (apiCfg *ApiConfig) HandlerCreateBook(w http.ResponseWriter, r *http.Reques
 		RespondWithError(w, 400, fmt.Sprintf("Error creating book: %v", err))
 		return
 	}
+
+	//TODO: Parse the generes from the Genere field in the json
+	//		After parsing, lookup each genere to see if it exists
+	//		For each genere, attempt to fetch the genere from the database
+	//		If it doesn't exist, create a new genere in the generes table
+	//		After you have the genere, insert a record into books_generes with the correct book,genere
 
 	RespondWithJSON(w, 201, models.ConvertDbBookToBook(book))
 }

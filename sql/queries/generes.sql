@@ -1,4 +1,8 @@
 -- name: CreateGenere :one
-INSERT INTO generes (name)
-VALUES ($1)
+INSERT INTO generes (genere_id, genere_name)
+VALUES ($1, $2)
 RETURNING *;
+
+
+-- name: GetGenereByName :one
+SELECT genere_name FROM generes WHERE genere_name=$1;

@@ -7,18 +7,35 @@ package database
 
 import (
 	"context"
-	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 const createGenere = `-- name: CreateGenere :one
-INSERT INTO generes (name)
-VALUES ($1)
-RETURNING genere_id, name
+INSERT INTO generes (genere_id, genere_name)
+VALUES ($1, $2)
+RETURNING genere_id, genere_name
 `
 
-func (q *Queries) CreateGenere(ctx context.Context, name sql.NullString) (Genere, error) {
-	row := q.db.QueryRowContext(ctx, createGenere, name)
+type CreateGenereParams struct {
+	GenereID   uuid.UUID
+	GenereName string
+}
+
+func (q *Queries) CreateGenere(ctx context.Context, arg CreateGenereParams) (Genere, error) {
+	row := q.db.QueryRowContext(ctx, createGenere, arg.GenereID, arg.GenereName)
 	var i Genere
-	err := row.Scan(&i.GenereID, &i.Name)
+	err := row.Scan(&i.GenereID, &i.GenereName)
 	return i, err
+}
+
+const getGenereByName = `-- name: GetGenereByName :one
+SELECT genere_name FROM generes WHERE genere_name=$1
+`
+
+func (q *Queries) GetGenereByName(ctx context.Context, genereName string) (string, error) {
+	row := q.db.QueryRowContext(ctx, getGenereByName, genereName)
+	var genere_name string
+	err := row.Scan(&genere_name)
+	return genere_name, err
 }

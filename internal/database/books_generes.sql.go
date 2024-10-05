@@ -7,22 +7,25 @@ package database
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
-const createBookGenere = `-- name: CreateBookGenere :one
-INSERT INTO books_generes (isbn, genere_id)
-VALUES ($1, $2)
-RETURNING id, isbn, genere_id
+const createBooksGeneres = `-- name: CreateBooksGeneres :one
+INSERT INTO books_generes (id, isbn, genere_id)
+VALUES ($1, $2, $3)
+RETURNING isbn, genere_id, id
 `
 
-type CreateBookGenereParams struct {
+type CreateBooksGeneresParams struct {
+	ID       uuid.NullUUID
 	Isbn     string
-	GenereID int32
+	GenereID uuid.UUID
 }
 
-func (q *Queries) CreateBookGenere(ctx context.Context, arg CreateBookGenereParams) (BooksGenere, error) {
-	row := q.db.QueryRowContext(ctx, createBookGenere, arg.Isbn, arg.GenereID)
+func (q *Queries) CreateBooksGeneres(ctx context.Context, arg CreateBooksGeneresParams) (BooksGenere, error) {
+	row := q.db.QueryRowContext(ctx, createBooksGeneres, arg.ID, arg.Isbn, arg.GenereID)
 	var i BooksGenere
-	err := row.Scan(&i.ID, &i.Isbn, &i.GenereID)
+	err := row.Scan(&i.Isbn, &i.GenereID, &i.ID)
 	return i, err
 }

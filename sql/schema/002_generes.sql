@@ -1,7 +1,7 @@
 -- +goose Up
 CREATE TABLE generes (
-    genere_id SERIAL PRIMARY KEY,
-    name TEXT UNIQUE
+    genere_id UUID PRIMARY KEY,
+    name TEXT UNIQUE NOT NULL
 );
 
 
