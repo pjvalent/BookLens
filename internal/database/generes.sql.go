@@ -30,12 +30,12 @@ func (q *Queries) CreateGenere(ctx context.Context, arg CreateGenereParams) (Gen
 }
 
 const getGenereByName = `-- name: GetGenereByName :one
-SELECT genere_name FROM generes WHERE genere_name=$1
+SELECT genere_id, genere_name FROM generes WHERE genere_name=$1
 `
 
-func (q *Queries) GetGenereByName(ctx context.Context, genereName string) (string, error) {
+func (q *Queries) GetGenereByName(ctx context.Context, genereName string) (Genere, error) {
 	row := q.db.QueryRowContext(ctx, getGenereByName, genereName)
-	var genere_name string
-	err := row.Scan(&genere_name)
-	return genere_name, err
+	var i Genere
+	err := row.Scan(&i.GenereID, &i.GenereName)
+	return i, err
 }

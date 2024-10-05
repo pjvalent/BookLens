@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -59,6 +60,40 @@ func (apiCfg *ApiConfig) HandlerCreateBook(w http.ResponseWriter, r *http.Reques
 	//		For each genere, attempt to fetch the genere from the database
 	//		If it doesn't exist, create a new genere in the generes table
 	//		After you have the genere, insert a record into books_generes with the correct book,genere
+
+	for _, genereName := range params.Generes {
+		genere, err := apiCfg.DB.GetGenereByName(r.Context(), genereName)
+
+		if err != nil {
+			//check to see if it is a sql.ErrNoRows error, if it is then the genere doesn't exist and we should make a new one
+			if err == sql.ErrNoRows {
+				genere, err = apiCfg.DB.CreateGenere(r.Context(), database.CreateGenereParams{
+					GenereID:   uuid.New(),
+					GenereName: genereName,
+				})
+				if err != nil {
+					log.Printf("Error creating genre '%s': %v", genereName, err)
+					RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error creating genre '%s'", genereName))
+					return
+				}
+			} else {
+				log.Printf("Error fetching genre '%s': %v", genereName, err)
+				RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error fetching genre '%s'", genereName))
+				return
+			}
+		}
+
+		//err != nil so we found the genere
+		_, err = apiCfg.DB.CreateBooksGeneres(r.Context(), database.CreateBooksGeneresParams{
+			Isbn:     params.Isbn,
+			GenereID: genere.GenereID,
+		})
+
+		if err != nil {
+			log.Printf("Error creating booksGenere entry %v", err)
+			RespondWithError(w, 400, fmt.Sprintf("Error creating booksGenere entry: %v", err))
+		}
+	}
 
 	RespondWithJSON(w, 201, models.ConvertDbBookToBook(book))
 }

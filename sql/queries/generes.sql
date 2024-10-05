@@ -5,4 +5,4 @@ RETURNING *;
 
 
 -- name: GetGenereByName :one
-SELECT genere_name FROM generes WHERE genere_name=$1;
+SELECT genere_id, genere_name FROM generes WHERE genere_name=$1;
