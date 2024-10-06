@@ -5,6 +5,7 @@
 package database
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -30,6 +31,17 @@ type BooksGenere struct {
 type Genere struct {
 	GenereID   uuid.UUID
 	GenereName string
+}
+
+type Review struct {
+	ID         uuid.UUID
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	UserID     uuid.UUID
+	BookID     uuid.UUID
+	Rating     int32
+	ReviewText sql.NullString
+	SpoilerTag sql.NullBool
 }
 
 type User struct {
