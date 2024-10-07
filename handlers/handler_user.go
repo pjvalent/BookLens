@@ -58,3 +58,20 @@ func (apiCfg *ApiConfig) HandlerGetUserByApiKey(w http.ResponseWriter, r *http.R
 	RespondWithJSON(w, 200, models.ConvertDbUserToUser(user))
 
 }
+
+func (apiConfig *ApiConfig) HandlerDeleteUser(w http.ResponseWriter, r *http.Request, user database.User) {
+	err := apiConfig.DB.DeleteUserByUserID(r.Context(), user.ID)
+
+	if err != nil {
+		log.Printf("Error deleting user: %v", err)
+		RespondWithError(w, 500, fmt.Sprintf("Error deleting user: %v", err))
+		return
+	}
+
+	RespondWithJSON(w, 200, struct {
+		Status string `json:"status"`
+	}{
+		Status: "success",
+	})
+
+}

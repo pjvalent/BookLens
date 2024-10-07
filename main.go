@@ -63,6 +63,8 @@ func main() {
 	v1Router.Post("/createGenere", apiCfg.HandlerCreateGenere)
 	v1Router.Post("/createReview", apiCfg.MiddlewareAuth(apiCfg.HandlerCreateReview))
 
+	v1Router.Delete("/deleteUser", apiCfg.MiddlewareAuth(apiCfg.HandlerDeleteUser))
+
 	// mount the v1 router to the /v1 path, which itself is mapped to the /healthz path (/v1/ready)
 	router.Mount("/v1", v1Router)
 
