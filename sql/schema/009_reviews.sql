@@ -6,8 +6,8 @@ CREATE TABLE reviews (
     user_id UUID NOT NULL,
     book_id UUID NOT NULL,
     rating INT NOT NULL,
-    review_text TEXT,
-    spoiler_tag BOOLEAN,
+    review_text TEXT NOT NULL,
+    spoiler_tag BOOLEAN NOT NULL,
     UNIQUE(user_id, book_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE

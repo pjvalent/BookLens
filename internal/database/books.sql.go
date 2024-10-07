@@ -53,3 +53,28 @@ func (q *Queries) CreateBook(ctx context.Context, arg CreateBookParams) (Book, e
 	)
 	return i, err
 }
+
+const getBookByTitleAuthor = `-- name: GetBookByTitleAuthor :one
+SELECT id, isbn, title, author, num_pages, price, created_at, updated_at FROM books WHERE title=$1 AND author=$2
+`
+
+type GetBookByTitleAuthorParams struct {
+	Title  string
+	Author string
+}
+
+func (q *Queries) GetBookByTitleAuthor(ctx context.Context, arg GetBookByTitleAuthorParams) (Book, error) {
+	row := q.db.QueryRowContext(ctx, getBookByTitleAuthor, arg.Title, arg.Author)
+	var i Book
+	err := row.Scan(
+		&i.ID,
+		&i.Isbn,
+		&i.Title,
+		&i.Author,
+		&i.NumPages,
+		&i.Price,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}

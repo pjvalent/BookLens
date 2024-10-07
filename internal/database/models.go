@@ -5,7 +5,6 @@
 package database
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -40,8 +39,8 @@ type Review struct {
 	UserID     uuid.UUID
 	BookID     uuid.UUID
 	Rating     int32
-	ReviewText sql.NullString
-	SpoilerTag sql.NullBool
+	ReviewText string
+	SpoilerTag bool
 }
 
 type User struct {

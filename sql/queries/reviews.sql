@@ -12,3 +12,6 @@ SET
 WHERE 
     user_id = $4 AND book_id = $5
 returning *;
+
+-- name: GetReviewByUserIDBookID :one
+SELECT COUNT(*) FROM reviews WHERE user_id=$1 AND book_id=$2;

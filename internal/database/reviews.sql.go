@@ -7,7 +7,6 @@ package database
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -26,8 +25,8 @@ type CreateReviewParams struct {
 	UserID     uuid.UUID
 	BookID     uuid.UUID
 	Rating     int32
-	ReviewText sql.NullString
-	SpoilerTag sql.NullBool
+	ReviewText string
+	SpoilerTag bool
 }
 
 func (q *Queries) CreateReview(ctx context.Context, arg CreateReviewParams) (Review, error) {
@@ -55,6 +54,22 @@ func (q *Queries) CreateReview(ctx context.Context, arg CreateReviewParams) (Rev
 	return i, err
 }
 
+const getReviewByUserIDBookID = `-- name: GetReviewByUserIDBookID :one
+SELECT COUNT(*) FROM reviews WHERE user_id=$1 AND book_id=$2
+`
+
+type GetReviewByUserIDBookIDParams struct {
+	UserID uuid.UUID
+	BookID uuid.UUID
+}
+
+func (q *Queries) GetReviewByUserIDBookID(ctx context.Context, arg GetReviewByUserIDBookIDParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getReviewByUserIDBookID, arg.UserID, arg.BookID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const updateReview = `-- name: UpdateReview :one
 UPDATE reviews
 SET 
@@ -68,7 +83,7 @@ returning id, created_at, updated_at, user_id, book_id, rating, review_text, spo
 
 type UpdateReviewParams struct {
 	Rating     int32
-	ReviewText sql.NullString
+	ReviewText string
 	UpdatedAt  time.Time
 	UserID     uuid.UUID
 	BookID     uuid.UUID

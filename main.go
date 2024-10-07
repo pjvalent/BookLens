@@ -50,10 +50,10 @@ func main() {
 		MaxAge:           300,
 	}))
 
-	//define a new router for the handler readiness to map to the /healthz path (to check if server is live and running)
+	// define a new router for the handler readiness to map to the /healthz path (to check if server is live and running)
 	v1Router := chi.NewRouter()
 
-	//scope the endpoint to only be get
+	// scope the endpoint to only be get
 	v1Router.Get("/healthz", handlers.HandleReadiness)
 	v1Router.Get("/err", handlers.HandlerErr)
 	v1Router.Get("/users", apiCfg.MiddlewareAuth(apiCfg.HandlerGetUserByApiKey))
@@ -61,8 +61,9 @@ func main() {
 	v1Router.Post("/users", apiCfg.HandlerCreateUser)
 	v1Router.Post("/createBook", apiCfg.MiddlewareAuth(apiCfg.HandlerCreateBook))
 	v1Router.Post("/createGenere", apiCfg.HandlerCreateGenere)
+	v1Router.Post("/createReview", apiCfg.MiddlewareAuth(apiCfg.HandlerCreateReview))
 
-	//mount the v1 router to the /v1 path, which itself is mapped to the /healthz path (/v1/ready)
+	// mount the v1 router to the /v1 path, which itself is mapped to the /healthz path (/v1/ready)
 	router.Mount("/v1", v1Router)
 
 	srv := &http.Server{
