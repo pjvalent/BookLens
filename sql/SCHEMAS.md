@@ -5,12 +5,16 @@ Goose is used for this, run in order starting at 001
 
 
 ## Updating the database schemas
-Use goose up / down to run the up/down sections defined in the schema files
 
-Update the queries as needed for the changes
+### Modify /schema files to update table definitions.
+- Use goose up / down to migrate
+- Name migrations xxx_migration_name.sql
+- No migrations should be in the /sql directory
 
-sqlc generate should then be run to generate the new internal/databases code
+### Modify /queries files to update the queries.
 
-Update the handlers/whatever other code needs to be updated to complete the updates
+- sqlc generate should then be run to generate the new internal/databases code
+- Queries should be in files pertaining to their respective tables
+- No queries should be in the /sql directory
 
-New schemas should be versioned numerically
+
