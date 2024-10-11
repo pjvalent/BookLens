@@ -54,6 +54,47 @@ func (q *Queries) CreateReview(ctx context.Context, arg CreateReviewParams) (Rev
 	return i, err
 }
 
+const getAllUserReviews = `-- name: GetAllUserReviews :many
+SELECT books.author, books.title, reviews.rating, reviews.review_text
+FROM reviews JOIN books ON reviews.book_id = books.id
+WHERE reviews.user_id = $1
+`
+
+type GetAllUserReviewsRow struct {
+	Author     string
+	Title      string
+	Rating     int32
+	ReviewText string
+}
+
+func (q *Queries) GetAllUserReviews(ctx context.Context, userID uuid.UUID) ([]GetAllUserReviewsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAllUserReviews, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetAllUserReviewsRow
+	for rows.Next() {
+		var i GetAllUserReviewsRow
+		if err := rows.Scan(
+			&i.Author,
+			&i.Title,
+			&i.Rating,
+			&i.ReviewText,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getReviewByUserIDBookID = `-- name: GetReviewByUserIDBookID :one
 SELECT COUNT(*) FROM reviews WHERE user_id=$1 AND book_id=$2
 `
@@ -78,7 +119,7 @@ SET
     updated_at = $3
 WHERE 
     user_id = $4 AND book_id = $5
-returning id, created_at, updated_at, user_id, book_id, rating, review_text, spoiler_tag
+RETURNING id, created_at, updated_at, user_id, book_id, rating, review_text, spoiler_tag
 `
 
 type UpdateReviewParams struct {

@@ -59,8 +59,24 @@ func (apiCfg *ApiConfig) HandlerGetUserByApiKey(w http.ResponseWriter, r *http.R
 
 }
 
-func (apiCfg *ApiConfig) HandlerGetAllReviews(w http.ResponseWriter, r *http.Request, user database.User) {
-	// TODO: Endpoint for retrieving all of a users reviews
+func (apiCfg *ApiConfig) HandlerGetAllUserReviews(w http.ResponseWriter, r *http.Request, user database.User) {
+
+	reviews, err := apiCfg.DB.GetAllUserReviews(r.Context(), user.ID)
+
+	if err != nil {
+		log.Printf("Error fetching user reviews: %v", err)
+		RespondWithError(w, 500, fmt.Sprintf("Error fetching user reviews: %v", err))
+		return
+	}
+
+	userReviews := make([]models.UserReview, len(reviews))
+
+	for i, dbUserReview := range reviews {
+		userReviews[i] = models.ConvertDbUserReviewToUserReview(dbUserReview)
+	}
+
+	RespondWithJSON(w, 200, userReviews)
+
 }
 
 func (apiConfig *ApiConfig) HandlerDeleteUser(w http.ResponseWriter, r *http.Request, user database.User) {

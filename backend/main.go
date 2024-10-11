@@ -57,6 +57,7 @@ func main() {
 	v1Router.Get("/healthz", handlers.HandleReadiness)
 	v1Router.Get("/err", handlers.HandlerErr)
 	v1Router.Get("/users", apiCfg.MiddlewareAuth(apiCfg.HandlerGetUserByApiKey))
+	v1Router.Get("/user/allReviews", apiCfg.MiddlewareAuth(apiCfg.HandlerGetAllUserReviews))
 
 	v1Router.Post("/users", apiCfg.HandlerCreateUser)
 	v1Router.Post("/createBook", apiCfg.MiddlewareAuth(apiCfg.HandlerCreateBook))

@@ -18,6 +18,13 @@ type Review struct {
 	SpoilerTag bool      `json:"spoiler_tag"`
 }
 
+type UserReview struct {
+	Author     string `json:"author"`
+	Title      string `json:"title"`
+	Rating     int32  `json:"rating"`
+	ReviewText string `json:"review_text"`
+}
+
 func ConvertDbReviewToReview(dbReview database.Review) Review {
 	return Review{
 		ID:         dbReview.ID,
@@ -28,5 +35,14 @@ func ConvertDbReviewToReview(dbReview database.Review) Review {
 		Rating:     dbReview.Rating,
 		ReviewText: dbReview.ReviewText,
 		SpoilerTag: dbReview.SpoilerTag,
+	}
+}
+
+func ConvertDbUserReviewToUserReview(dbUserReview database.GetAllUserReviewsRow) UserReview {
+	return UserReview{
+		Author:     dbUserReview.Author,
+		Title:      dbUserReview.Title,
+		Rating:     dbUserReview.Rating,
+		ReviewText: dbUserReview.ReviewText,
 	}
 }

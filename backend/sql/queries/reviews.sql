@@ -11,7 +11,12 @@ SET
     updated_at = $3
 WHERE 
     user_id = $4 AND book_id = $5
-returning *;
+RETURNING *;
 
 -- name: GetReviewByUserIDBookID :one
 SELECT COUNT(*) FROM reviews WHERE user_id=$1 AND book_id=$2;
+
+-- name: GetAllUserReviews :many
+SELECT books.author, books.title, reviews.rating, reviews.review_text
+FROM reviews JOIN books ON reviews.book_id = books.id
+WHERE reviews.user_id = $1;
