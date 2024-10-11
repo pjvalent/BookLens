@@ -4,8 +4,8 @@
 
 <style>
     header {
-        background-color: #848484;
-        color: #ffffff;
+        background-color: #ffffff;
+        color: #1b4d3e;
         padding: 1rem;
         position: fixed;
         width: 100%;
