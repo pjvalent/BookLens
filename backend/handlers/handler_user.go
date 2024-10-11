@@ -17,10 +17,10 @@ func (apiCfg *ApiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Reques
 	// TODO: Update so that account balance can be a dollar value, then convert to cents for storing in the database
 
 	type parameters struct {
-		FirstName      string `json:"first_name"`
-		LastName       string `json:"last_name"`
-		Email          string `json:"email"`
-		AccountBalance int64  `json:"account_balance"`
+		FirstName string `json:"first_name"`
+		LastName  string `json:"last_name"`
+		Email     string `json:"email"`
+		// AccountBalance int64  `json:"account_balance"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -42,7 +42,7 @@ func (apiCfg *ApiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Reques
 		FirstName:      params.FirstName,
 		LastName:       params.LastName,
 		Email:          params.Email,
-		AccountBalance: params.AccountBalance,
+		AccountBalance: 0,
 	})
 
 	if err != nil {
@@ -57,6 +57,10 @@ func (apiCfg *ApiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Reques
 func (apiCfg *ApiConfig) HandlerGetUserByApiKey(w http.ResponseWriter, r *http.Request, user database.User) {
 	RespondWithJSON(w, 200, models.ConvertDbUserToUser(user))
 
+}
+
+func (apiCfg *ApiConfig) HandlerGetAllReviews(w http.ResponseWriter, r *http.Request, user database.User) {
+	// TODO: Endpoint for retrieving all of a users reviews
 }
 
 func (apiConfig *ApiConfig) HandlerDeleteUser(w http.ResponseWriter, r *http.Request, user database.User) {

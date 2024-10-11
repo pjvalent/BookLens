@@ -1,0 +1,24 @@
+/* src/global.css */
+
+/* Reset default margins and paddings */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #1b4d3e; /* Dark green background */
+  color: #ffffff; /* White text color */
+  font-family: Arial, sans-serif;
+  /* Remove or comment out these lines */
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+}
+
+html, body {
+  height: 100%;
+}
+
+/* Remove the #app or #svelte styles if they set height or centering */

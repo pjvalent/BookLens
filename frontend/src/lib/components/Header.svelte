@@ -4,8 +4,12 @@
 
 <style>
     header {
-        background-color: #065535;
+        background-color: #848484;
+        color: #ffffff;
         padding: 1rem;
+        position: fixed;
+        width: 100%;
+        text-align: center;
     }
 </style>
 
