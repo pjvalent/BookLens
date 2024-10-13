@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/pjvalent/BookLens/backend/internal/database"
+	"github.com/pjvalent/BookLens/backend/internal/validate"
 	"github.com/pjvalent/BookLens/backend/models"
 )
 
@@ -32,6 +33,14 @@ func (apiCfg *ApiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		log.Printf("Error decoding user while creating user: %v", err)
 		RespondWithError(w, 400, fmt.Sprintf("Error parsing JSON: %v", err))
+		return
+	}
+
+	err = validate.ValidateEmail(params.Email)
+
+	if err != nil {
+		log.Printf("Error parsing email: %v", err)
+		RespondWithError(w, 400, fmt.Sprintf("Error parsing email: %v", err))
 		return
 	}
 
