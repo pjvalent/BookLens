@@ -5,6 +5,7 @@
     let firstName: string = '';
     let lastName: string = '';
     let email: string = '';
+    let password: string = '';
   
     export let error: string | null = null;
   
@@ -125,6 +126,17 @@
           bind:value={email}
           required
         />
+      </div>
+
+      <div>
+        <label for="password">Password:</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          bind:value={password}
+          required
+          />
       </div>
   
       <button type="submit">Sign Up</button>
