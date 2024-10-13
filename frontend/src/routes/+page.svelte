@@ -20,8 +20,9 @@
   }
 
   h1 {
-    color: #1b4d3e; /* Dark green */
+    color: #ffffff; /* Dark green */
     margin-bottom: 1rem;
+    padding-top: 3rem;
   }
 
   p {
@@ -45,7 +46,9 @@
 </style>
 
 <div class="home-page">
-  <h1>Welcome to BookLense</h1>
+  <div>
+    <h1>Welcome to BookLense</h1>
+  </div>
   <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
   <div>
     <button on:click={navigateToHealthTest}>Go to Health Test</button>
