@@ -14,7 +14,7 @@
   
     function handleSubmit(event: Event) {
       event.preventDefault();
-      dispatch('submit', { firstName, lastName, email });
+      dispatch('submit', { firstName, lastName, email, password });
     }
 
     function goToLogin() {
