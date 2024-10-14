@@ -16,6 +16,7 @@ type User struct {
 	Email          string    `json:"email"`
 	AccountBalance int64     `json:"account_balance"`
 	ApiKey         string    `json:"api_key"`
+	UserPassword   string    `json:"password"`
 }
 
 func ConvertDbUserToUser(dbUser database.User) User {
@@ -28,5 +29,6 @@ func ConvertDbUserToUser(dbUser database.User) User {
 		Email:          dbUser.Email,
 		AccountBalance: dbUser.AccountBalance,
 		ApiKey:         dbUser.ApiKey,
+		UserPassword:   dbUser.UserPassword,
 	}
 }

@@ -52,4 +52,5 @@ type User struct {
 	Email          string
 	AccountBalance int64
 	ApiKey         string
+	UserPassword   string
 }

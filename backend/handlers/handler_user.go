@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/pjvalent/BookLens/backend/internal/database"
+	"github.com/pjvalent/BookLens/backend/internal/security"
 	"github.com/pjvalent/BookLens/backend/internal/validate"
 	"github.com/pjvalent/BookLens/backend/models"
 )
@@ -18,9 +19,10 @@ func (apiCfg *ApiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Reques
 	// TODO: Update so that account balance can be a dollar value, then convert to cents for storing in the database
 
 	type parameters struct {
-		FirstName string `json:"first_name"`
-		LastName  string `json:"last_name"`
-		Email     string `json:"email"`
+		FirstName    string `json:"first_name"`
+		LastName     string `json:"last_name"`
+		Email        string `json:"email"`
+		UserPassword string `json:"password"`
 		// AccountBalance int64  `json:"account_balance"`
 	}
 
@@ -36,11 +38,19 @@ func (apiCfg *ApiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	// check for valid email
 	err = validate.ValidateEmail(params.Email)
-
 	if err != nil {
 		log.Printf("Error parsing email: %v", err)
 		RespondWithError(w, 400, fmt.Sprintf("Error parsing email: %v", err))
+		return
+	}
+
+	password, err := security.HashPassword(params.UserPassword)
+
+	if err != nil {
+		log.Printf("Error with creating user password: %v", err)
+		RespondWithError(w, 400, fmt.Sprintf("Password error: %v", err))
 		return
 	}
 
@@ -52,6 +62,7 @@ func (apiCfg *ApiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Reques
 		LastName:       params.LastName,
 		Email:          params.Email,
 		AccountBalance: 0,
+		UserPassword:   string(password),
 	})
 
 	if err != nil {
