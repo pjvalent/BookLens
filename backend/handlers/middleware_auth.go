@@ -11,6 +11,7 @@ import (
 
 type authedHandler func(http.ResponseWriter, *http.Request, database.User)
 
+// TODO: add password checking to this function
 func (cfg *ApiConfig) MiddlewareAuth(handler authedHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		apiKey, err := auth.GetApiKey(r.Header)

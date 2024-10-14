@@ -55,12 +55,6 @@ func (apiCfg *ApiConfig) HandlerCreateBook(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	//TODO: Parse the generes from the Genere field in the json
-	//		After parsing, lookup each genere to see if it exists
-	//		For each genere, attempt to fetch the genere from the database
-	//		If it doesn't exist, create a new genere in the generes table
-	//		After you have the genere, insert a record into books_generes with the correct book,genere
-
 	for _, genereName := range params.Generes {
 		genere, err := apiCfg.DB.GetGenereByName(r.Context(), genereName)
 
