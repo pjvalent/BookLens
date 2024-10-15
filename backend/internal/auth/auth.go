@@ -28,3 +28,24 @@ func GetApiKey(headers http.Header) (string, error) {
 	return vals[1], nil
 
 }
+
+func GetToken(headers http.Header) (string, error) {
+
+	authHeader := headers.Get("Authorization")
+
+	if authHeader == "" {
+		return "", errors.New("no authentication information found")
+	}
+
+	vals := strings.Split(authHeader, " ")
+
+	if len(vals) != 2 {
+		return "", errors.New("malformed auth header, expected format: Bearer {--bearer token--}")
+	}
+
+	if vals[0] != "Bearer" {
+		return "", errors.New("malformed first part of auth header, expected format: Bearer {--bearer token--}")
+	}
+
+	return vals[1], nil
+}
