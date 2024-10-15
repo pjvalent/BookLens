@@ -36,8 +36,14 @@ func main() {
 		log.Fatal("Can't connect to database.")
 	}
 
+	jwtKey := []byte(os.Getenv("JWT_SECRET_KEY"))
+	if len(jwtKey) == 0 {
+		log.Fatal("No jwt key specified")
+	}
+
 	apiCfg := handlers.ApiConfig{
-		DB: database.New(conn),
+		DB:     database.New(conn),
+		JWTKey: jwtKey,
 	}
 
 	router := chi.NewRouter()
@@ -63,6 +69,8 @@ func main() {
 	v1Router.Post("/createBook", apiCfg.MiddlewareAuth(apiCfg.HandlerCreateBook))
 	v1Router.Post("/createGenere", apiCfg.HandlerCreateGenere)
 	v1Router.Post("/createReview", apiCfg.MiddlewareAuth(apiCfg.HandlerCreateReview))
+
+	v1Router.Post("/login", apiCfg.HandlerLogin)
 
 	v1Router.Delete("/deleteUser", apiCfg.MiddlewareAuth(apiCfg.HandlerDeleteUser))
 

@@ -34,3 +34,9 @@ func (cfg *ApiConfig) MiddlewareAuth(handler authedHandler) http.HandlerFunc {
 
 	}
 }
+
+// // TODO: User will login on a login handler endpoint, that endpoint will generate a jwt token for the user and pass it back to the user
+// // this middleware will be an auth middleware that validates with the jwt token instead of the api token
+// func (cfg *ApiConfig) UserPasswordAuth(handler authedHandler) http.HandlerFunc {
+
+// }
