@@ -88,6 +88,17 @@ func (apiCfg *ApiConfig) HandlerCreateReview(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	//TODO: create ConvertDbReviewToReview
 	RespondWithJSON(w, 201, models.ConvertDbReviewToReview(review))
 }
+
+// TODO: figure  out what the heck I was doing here
+// func (apiCfg *ApiConfig) HandlerDeleteReview(w http.ResponseWriter, r *http.Request) {
+// 	userID, ok := r.Context().Value(userIDContextKey).(string)
+
+// 	if !ok {
+// 		log.Printf("Error parsing the userID from the context")
+// 		RespondWithError(w, 500, fmt.Sprintf("Internal server error :("))
+// 		return
+// 	}
+
+// }

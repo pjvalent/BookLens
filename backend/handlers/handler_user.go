@@ -115,3 +115,33 @@ func (apiConfig *ApiConfig) HandlerDeleteUser(w http.ResponseWriter, r *http.Req
 	})
 
 }
+
+func (apiCfg *ApiConfig) HandlerDeleteUserV1(w http.ResponseWriter, r *http.Request) {
+	// get the userID
+	userID, ok := r.Context().Value(userIDContextKey).(string)
+
+	if !ok {
+		log.Printf("Error deleting user, issue getting context value userIDContextKey")
+		RespondWithError(w, 500, fmt.Sprintf("Error deleting user"))
+		return
+	}
+	userIDAsUUID, err := uuid.Parse(userID)
+	if err != nil {
+		log.Printf("unable to parse uuid")
+		RespondWithError(w, 500, fmt.Sprintf("Error deleting user"))
+		return
+	}
+
+	err = apiCfg.DB.DeleteUserByUserID(r.Context(), userIDAsUUID)
+	if err != nil {
+		log.Printf("unable to delete user")
+		RespondWithError(w, 500, fmt.Sprintf("Error deleting user"))
+		return
+	}
+
+	RespondWithJSON(w, 200, struct {
+		Status string `json:"status"`
+	}{
+		Status: "success",
+	})
+}
