@@ -1,7 +1,12 @@
 <!-- src/routes/+layout.svelte -->
 <script lang="ts">
     import Header from '$lib/components/Header.svelte';
+    import { onMount } from 'svelte';
+    import { authToken } from '$lib/stores/authToken';
     export let data;
+    onMount(() => {
+    authToken.initialize();
+  });
   </script>
   
   <style>

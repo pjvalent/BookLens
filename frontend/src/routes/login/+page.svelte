@@ -1,25 +1,60 @@
-<style>
-    .login-page {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-    }
-  
-    h1 {
-      color: #ffffff; /* Dark green */
-      margin-bottom: 1rem;
-      text-align: center;
-      padding-top: 3rem;
-    }
-  
-    p {
-      margin-bottom: 2rem;
-    }
+<script lang="ts">
+  import SignupForm from '$lib/components/LoginForm.svelte';
+  import { goto } from '$app/navigation';
+  import { authToken } from '$lib/stores/authToken';
 
-  </style>
+  let error: string | null = null;
+
+  async function handleLogin(event: CustomEvent) {
+    const { email, password } = event.detail;
+    error = null;
+
+    try {
+      const response = await fetch('http://localhost:8080/v1/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to log in');
+      }
+
+      // Parse the response to get the token
+      const data = await response.json();
+      const token = data.token;
+
+      // Store the token
+      authToken.set(token);
+
   
-  <div class="login-page">
-    <h1>LOGIN PAGE</h1>
-    <p> this is the login page holder</p>
+      goto('/welcome');
+    } catch (err) {
+      error = (err as Error).message;
+    }
+  }
+</script>
+
+
+
+
+
+<style>
+  .login-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+  }
+</style>
+  
+  <div class="login-page-container">
+    <SignupForm {error} on:submit={handleLogin} />
   </div>
