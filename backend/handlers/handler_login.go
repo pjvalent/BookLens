@@ -62,6 +62,7 @@ func (apiCfg *ApiConfig) HandlerLogin(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// TODO: get this out of the login handler, put it in its own file, also make a helpers/utilities directory to put this function/claims/json/config in it
 func (apiCfg *ApiConfig) GenerateToken(userID string) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
@@ -69,7 +70,7 @@ func (apiCfg *ApiConfig) GenerateToken(userID string) (string, error) {
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			Issuer:    "your-app-name",
+			Issuer:    "BookLense",
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
