@@ -39,18 +39,27 @@ func (cfg *ApiConfig) MiddlewareAuth(handler authedHandler) http.HandlerFunc {
 	}
 }
 
-// // TODO: User will login on a login handler endpoint, that endpoint will generate a jwt token for the user and pass it back to the user
-// // this middleware will be an auth middleware that validates with the jwt token instead of the api token
+// // TODO: Change to utilize token in cookie
 func (apiCfg *ApiConfig) MiddlewareTokenAuth(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		tokenString, err := auth.GetToken(r.Header)
+		cookie, err := r.Cookie("token")
 
 		if err != nil {
-			log.Printf("error authenticating bearer token: %v", err)
-			RespondWithError(w, 403, fmt.Sprintf("Error authenticating bearer token: %v", err))
+			log.Printf("error parsing cookie: %v", err)
+			RespondWithError(w, 403, fmt.Sprintf("Cookie error: %v", err))
 			return
 		}
+
+		tokenString := cookie.Value
+
+		// tokenString, err := auth.GetToken(r.Header)
+
+		// if err != nil {
+		// 	log.Printf("error authenticating bearer token: %v", err)
+		// 	RespondWithError(w, 403, fmt.Sprintf("Error authenticating bearer token: %v", err))
+		// 	return
+		// }
 
 		claims := &Claims{}
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
