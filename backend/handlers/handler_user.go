@@ -79,6 +79,35 @@ func (apiCfg *ApiConfig) HandlerGetUserByApiKey(w http.ResponseWriter, r *http.R
 
 }
 
+func (apiCfg *ApiConfig) HandlerGetUserByToken(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(userIDContextKey).(string)
+
+	if !ok {
+		log.Printf("Error, issue getting context value userIDContextKey")
+		RespondWithError(w, 500, fmt.Sprintf("Error getting context value userIDContextKey: %v", ok))
+		return
+	}
+
+	userIDAsUUID, err := uuid.Parse(userID)
+
+	if err != nil {
+		log.Printf("Error, issue parsing userID")
+		RespondWithError(w, 500, fmt.Sprintf("Error issue parsing userID: %v", err))
+		return
+	}
+
+	user, err := apiCfg.DB.GetUserByID(r.Context(), userIDAsUUID)
+
+	if err != nil {
+		log.Printf("Error with GetUserByID")
+		RespondWithError(w, 500, fmt.Sprintf("Error fetching user: %v", err))
+		return
+	}
+
+	RespondWithJSON(w, http.StatusOK, models.ConvertDbUserToUser(user))
+
+}
+
 func (apiCfg *ApiConfig) HandlerGetAllUserReviews(w http.ResponseWriter, r *http.Request, user database.User) {
 
 	reviews, err := apiCfg.DB.GetAllUserReviews(r.Context(), user.ID)

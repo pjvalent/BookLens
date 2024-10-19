@@ -48,9 +48,9 @@ func main() {
 
 	router := chi.NewRouter()
 	router.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"https://*", "http://*"},
+		AllowedOrigins:   []string{"http://localhost:5173"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"*"},
+		AllowedHeaders:   []string{"Content-Type"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: true,
 		MaxAge:           300,
@@ -78,6 +78,8 @@ func main() {
 	router.Mount("/v1", v1Router)
 
 	v2Router := chi.NewRouter()
+
+	v2Router.Get("/user", apiCfg.MiddlewareTokenAuth(apiCfg.HandlerGetUserByToken))
 
 	// TODO: need to add a v2 login endpoint to generate jwt token for logged in user
 	v2Router.Delete("/deleteUser", apiCfg.MiddlewareTokenAuth(apiCfg.HandlerDeleteUserV1))
