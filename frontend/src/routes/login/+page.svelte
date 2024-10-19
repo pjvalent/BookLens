@@ -1,7 +1,7 @@
 <script lang="ts">
   import SignupForm from '$lib/components/LoginForm.svelte';
   import { goto } from '$app/navigation';
-  import { authToken } from '$lib/stores/authToken';
+
 
   let error: string | null = null;
 
@@ -19,20 +19,13 @@
           email: email,
           password: password,
         }),
+        credentials: 'include',
       });
 
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to log in');
       }
-
-      // Parse the response to get the token
-      const data = await response.json();
-      const token = data.token;
-
-      // Store the token
-      authToken.set(token);
-
   
       goto('/welcome');
     } catch (err) {
