@@ -19,10 +19,10 @@ func (apiCfg *ApiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Reques
 	// TODO: Update so that account balance can be a dollar value, then convert to cents for storing in the database
 
 	type parameters struct {
-		FirstName    string `json:"first_name"`
-		LastName     string `json:"last_name"`
-		Email        string `json:"email"`
-		UserPassword string `json:"password"`
+		FirstName string `json:"first_name"`
+		LastName  string `json:"last_name"`
+		Email     string `json:"email"`
+		Password  string `json:"password"`
 		// AccountBalance int64  `json:"account_balance"`
 	}
 
@@ -46,7 +46,7 @@ func (apiCfg *ApiConfig) HandlerCreateUser(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	password, err := security.HashPassword(params.UserPassword)
+	password, err := security.HashPassword(params.Password)
 
 	if err != nil {
 		log.Printf("Error with creating user password: %v", err)

@@ -6,7 +6,7 @@
   let error: string | null = null;
 
   async function handleSignup(event: CustomEvent) {
-    const { firstName, lastName, email } = event.detail;
+    const { firstName, lastName, email, password } = event.detail;
     error = null;
 
     try {
@@ -19,6 +19,7 @@
           first_name: firstName,
           last_name: lastName,
           email: email,
+          password: password,
         }),
       });
 

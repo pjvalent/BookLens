@@ -33,8 +33,8 @@ func (apiCfg *ApiConfig) HandlerLogin(w http.ResponseWriter, r *http.Request) {
 	user, err := apiCfg.DB.GetUserByEmail(r.Context(), params.Email)
 
 	if err != nil {
-		log.Printf("Error can't fine user by email: %v", err)
-		RespondWithError(w, 400, fmt.Sprintf("Error, can't find user with provided emaiol: %v", err))
+		log.Printf("Error can't find user by email: %v", err)
+		RespondWithError(w, 400, fmt.Sprintf("Error, can't find user with provided email: %v", err))
 		return
 	}
 
