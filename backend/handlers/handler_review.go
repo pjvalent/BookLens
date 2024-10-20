@@ -91,6 +91,34 @@ func (apiCfg *ApiConfig) HandlerCreateReview(w http.ResponseWriter, r *http.Requ
 	RespondWithJSON(w, 201, models.ConvertDbReviewToReview(review))
 }
 
+func (apiCfg *ApiConfig) HandlerGetUserReviews(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(userIDContextKey).(string)
+
+	if !ok {
+		log.Printf("Error gettting userIDContextKey: %v", ok)
+		RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error getting user reviews: %v", ok))
+		return
+	}
+
+	userIDAsUUID, err := uuid.Parse(userID)
+	if err != nil {
+		log.Printf("Error with uuid: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error getting user reviews: %v", err))
+		return
+	}
+
+	reviews, err := apiCfg.DB.GetAllUserReviews(r.Context(), userIDAsUUID)
+
+	if err != nil {
+		log.Printf("Error with getting all user reviews: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Error getting user reviews: %v", err))
+		return
+	}
+
+	RespondWithJSON(w, http.StatusOK, models.ConvertDbUserReviewListToUserReviewList(reviews))
+
+}
+
 // TODO: figure  out what the heck I was doing here
 // func (apiCfg *ApiConfig) HandlerDeleteReview(w http.ResponseWriter, r *http.Request) {
 // 	userID, ok := r.Context().Value(userIDContextKey).(string)

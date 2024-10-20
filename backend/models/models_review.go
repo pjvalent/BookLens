@@ -46,3 +46,19 @@ func ConvertDbUserReviewToUserReview(dbUserReview database.GetAllUserReviewsRow)
 		ReviewText: dbUserReview.ReviewText,
 	}
 }
+
+func ConvertDbUserReviewListToUserReviewList(dbUserReviewList []database.GetAllUserReviewsRow) []UserReview {
+	userReviews := make([]UserReview, len(dbUserReviewList))
+
+	for i, review := range dbUserReviewList {
+		newReview := UserReview{
+			Author:     review.Author,
+			Title:      review.Title,
+			Rating:     review.Rating,
+			ReviewText: review.ReviewText,
+		}
+		userReviews[i] = newReview
+	}
+
+	return userReviews
+}
