@@ -71,6 +71,20 @@ func (apiCfg *ApiConfig) HandlerLogin(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func (apiCfg *ApiConfig) HandlerLogout(w http.ResponseWriter, r *http.Request) {
+	// Clear the token cookie to make the user be logged out
+	http.SetCookie(w, &http.Cookie{
+		Name:     "token",
+		Value:    "",
+		Expires:  time.Unix(0, 0),
+		HttpOnly: true,
+		Secure:   false,
+		SameSite: http.SameSiteStrictMode,
+	})
+
+	RespondWithJSON(w, http.StatusOK, map[string]string{"status": "logged out"})
+}
+
 // TODO: get this out of the login handler, put it in its own file, also make a helpers/utilities directory to put this function/claims/json/config in it
 func (apiCfg *ApiConfig) GenerateToken(userID string) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)

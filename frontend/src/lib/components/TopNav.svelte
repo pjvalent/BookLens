@@ -149,6 +149,7 @@
         <div class="dropdown-content" class:show={showMenuDropdown}>
           <a href="/categories">Categories</a>
           <a href="/bestsellers">Best Sellers</a>
+          <a href="/reccomendations">Reccomended For You</a>
           <!-- Add more menu items -->
         </div>
       </div>
