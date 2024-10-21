@@ -2,3 +2,4 @@ BookLense
 data/
 backend
 .env
+.venv
