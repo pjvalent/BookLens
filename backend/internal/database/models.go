@@ -21,6 +21,12 @@ type Book struct {
 	UpdatedAt time.Time
 }
 
+type BookEmbedding struct {
+	ID        uuid.UUID
+	BookID    uuid.UUID
+	Embedding interface{}
+}
+
 type BooksGenere struct {
 	Isbn     string
 	GenereID uuid.UUID

@@ -1,6 +1,5 @@
 BookLense
 data/
-backend
 .env
 .venv
 .DS_Store
