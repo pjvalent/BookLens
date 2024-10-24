@@ -5,20 +5,28 @@
 package database
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 type Book struct {
-	ID        uuid.UUID
-	Isbn      string
-	Title     string
-	Author    string
-	NumPages  int32
-	Price     int32
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID               uuid.UUID
+	Isbn             string
+	Title            string
+	Author           string
+	NumPages         int32
+	Price            int32
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
+	PublicationDay   sql.NullInt16
+	PublicationMonth sql.NullInt16
+	PubilcationYear  sql.NullInt16
+	Publisher        sql.NullString
+	BookDesc         sql.NullString
+	Format           sql.NullString
+	AuthorID         uuid.NullUUID
 }
 
 type BookEmbedding struct {
