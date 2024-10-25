@@ -20,3 +20,6 @@ SELECT COUNT(*) FROM reviews WHERE user_id=$1 AND book_id=$2;
 SELECT books.author, books.title, reviews.rating, reviews.review_text
 FROM reviews JOIN books ON reviews.book_id = books.id
 WHERE reviews.user_id = $1;
+
+-- name: DeleteReviewByID :exec
+DELETE FROM reviews WHERE user_id=$1 AND book_id=$2;

@@ -119,6 +119,66 @@ func (apiCfg *ApiConfig) HandlerGetUserReviews(w http.ResponseWriter, r *http.Re
 
 }
 
+func (apiCfg *ApiConfig) HandlerDeleteReview(w http.ResponseWriter, r *http.Request) {
+
+	type parameters struct {
+		BookID string `json:"book_id"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+
+	params := parameters{}
+
+	err := decoder.Decode(&params)
+
+	if err != nil {
+		log.Printf("Error decoding user while creating review: %v", err)
+		RespondWithError(w, 400, fmt.Sprintf("Error parsing JSON: %v", err))
+		return
+	}
+
+	userID, ok := r.Context().Value(userIDContextKey).(string)
+
+	if !ok {
+		log.Printf("Error parsing the userID from the context")
+		RespondWithError(w, 500, fmt.Sprintf("Internal server error :("))
+		return
+	}
+
+	userIDAsUUID, err := uuid.Parse(userID)
+	if err != nil {
+		log.Printf("Error decoding user while deleting review: %v", err)
+		RespondWithError(w, 500, fmt.Sprintf("Error parsing user: %v", err))
+		return
+	}
+
+	bookIdAsUUID, err := uuid.Parse(params.BookID)
+
+	if err != nil {
+		log.Printf("Error decoding book id: %v", err)
+		RespondWithError(w, 500, fmt.Sprintf("Error parsing JSON: %v", err))
+		return
+	}
+
+	err = apiCfg.DB.DeleteReviewByID(r.Context(), database.DeleteReviewByIDParams{
+		UserID: userIDAsUUID,
+		BookID: bookIdAsUUID,
+	})
+
+	if err != nil {
+		log.Printf("Error decoding user while deleting review: %v", err)
+		RespondWithError(w, 500, fmt.Sprintf("Error deleting review: %v", err))
+		return
+	}
+
+	RespondWithJSON(w, http.StatusOK, struct {
+		Status string `json:"status"`
+	}{
+		Status: "success",
+	})
+
+}
+
 // TODO: figure  out what the heck I was doing here
 // func (apiCfg *ApiConfig) HandlerDeleteReview(w http.ResponseWriter, r *http.Request) {
 // 	userID, ok := r.Context().Value(userIDContextKey).(string)
