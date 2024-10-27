@@ -19,7 +19,16 @@ def ingest_books(batch_size, path):
             print("Line: ", line_number)
             try:
                 book = json.loads(line)
-                
+                # TODO: need to filter out any entries that are not english, and where the title doesn't exist in the list already
+                #       Reducing the amout that goes to the database is needed
+
+                if book['language_code'] != 'eng':
+                     continue #skip this line and proceed to the next one
+                if book['country_code'] != 'US':
+                     continue #skip this line and proceed to the next one
+                if any(x in book['title'].lower() for x in ["box set", "collection", "bundle"]):
+                     continue #skip this line and proceed to the next one
+
                 books_list.append(book)
                 
             except json.JSONDecodeError as e:
@@ -42,11 +51,11 @@ def ingest_books(batch_size, path):
 
 def process_books(books_list):
     conn = psycopg2.connect(
-        dbname='',
-        user='',
-        password='',
-        host='',
-        port=''
+        dbname='book_lens',
+        user='postgres',
+        password='password',
+        host='localhost',
+        port='5433'
     )
     cursor = conn.cursor()
 
@@ -139,7 +148,7 @@ def to_int_zero(value):
 
 def main():
     print("Calling ingest books")
-    ingest_books(1000, '../data/goodreads_books.json')
+    ingest_books(5000, '../data/goodreads_books.json')
 
 
 if __name__ == "__main__":
