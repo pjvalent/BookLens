@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -91,4 +92,52 @@ func (q *Queries) GetBookByTitleAuthor(ctx context.Context, arg GetBookByTitleAu
 		&i.AuthorID,
 	)
 	return i, err
+}
+
+const similarBooksByDesc = `-- name: SimilarBooksByDesc :many
+SELECT b.title, b.publisher, b.book_desc
+FROM books b
+INNER JOIN book_embeddings be ON b.id = be.book_id
+CROSS JOIN (
+    SELECT embedding
+    FROM book_embeddings
+    WHERE book_id = (SELECT id FROM books WHERE books.isbn = $1)
+) AS target_embedding
+WHERE b.id != (SELECT id FROM books WHERE isbn = $1)
+ORDER BY be.embedding <=> target_embedding.embedding
+LIMIT $2
+`
+
+type SimilarBooksByDescParams struct {
+	Isbn  string
+	Limit int32
+}
+
+type SimilarBooksByDescRow struct {
+	Title     string
+	Publisher sql.NullString
+	BookDesc  sql.NullString
+}
+
+func (q *Queries) SimilarBooksByDesc(ctx context.Context, arg SimilarBooksByDescParams) ([]SimilarBooksByDescRow, error) {
+	rows, err := q.db.QueryContext(ctx, similarBooksByDesc, arg.Isbn, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SimilarBooksByDescRow
+	for rows.Next() {
+		var i SimilarBooksByDescRow
+		if err := rows.Scan(&i.Title, &i.Publisher, &i.BookDesc); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
