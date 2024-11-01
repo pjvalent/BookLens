@@ -81,6 +81,8 @@ func main() {
 
 	v2Router.Get("/user", apiCfg.MiddlewareTokenAuth(apiCfg.HandlerGetUserByToken))
 
+	v2Router.Post("/recommendations", apiCfg.HandlerGetSimilarBooksByDesc)
+
 	// TODO: need to add a v2 login endpoint to generate jwt token for logged in user
 	v2Router.Delete("/deleteUser", apiCfg.MiddlewareTokenAuth(apiCfg.HandlerDeleteUserV1))
 	v2Router.Delete("/deleteReview", apiCfg.MiddlewareTokenAuth(apiCfg.HandlerDeleteReview))
