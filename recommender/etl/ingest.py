@@ -4,9 +4,16 @@ import psycopg2
 import psycopg2.extras
 import uuid
 import datetime
+import re
 from psycopg2.extras import execute_batch
 # from sentence_transformers import SentenceTransformer
 
+
+def normalize_text(text):
+     text = text.lower() #lowercase that shiii
+     text = re.sub(r'[^a-z0-9\s]', '', text) #remove punctuation
+     text = re.sub(r'\s+', ' ', text) #remove extra spaces
+     return text.strip()
 
 
 def ingest_books(batch_size, path):
