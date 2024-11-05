@@ -18,12 +18,14 @@ func (apiCfg *ApiConfig) HandlerCreateBook(w http.ResponseWriter, r *http.Reques
 	// TODO: Update so that account balance can be a dollar value, then convert to cents for storing in the database
 
 	type parameters struct {
-		Isbn     string   `json:"isbn"`
-		Title    string   `json:"title"`
-		Author   string   `json:"author"`
-		NumPages int32    `json:"num_pages"`
-		Price    int32    `json:"price"`
-		Generes  []string `json:"generes"`
+		Isbn      string   `json:"isbn"`
+		Title     string   `json:"title"`
+		Author    string   `json:"author"`
+		NumPages  int32    `json:"num_pages"`
+		Price     int32    `json:"price"`
+		Generes   []string `json:"generes"`
+		Publisher string   `json:"publisher"`
+		BookDesc  string   `json:"book_desc"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -47,6 +49,8 @@ func (apiCfg *ApiConfig) HandlerCreateBook(w http.ResponseWriter, r *http.Reques
 		Author:    params.Author,
 		NumPages:  params.NumPages,
 		Price:     params.Price,
+		Publisher: sql.NullString{String: params.Publisher, Valid: true},
+		BookDesc:  sql.NullString{String: params.BookDesc, Valid: true},
 	})
 
 	if err != nil {

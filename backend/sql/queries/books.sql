@@ -1,6 +1,6 @@
 -- name: CreateBook :one
-INSERT INTO books (id, isbn, created_at, updated_at, title, author, num_pages, price)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+INSERT INTO books (id, isbn, created_at, updated_at, title, author, num_pages, price, publisher, book_desc)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 RETURNING *;
 
 -- TODO: update this so that the publisher and the book_desc are added

@@ -14,8 +14,8 @@ import (
 )
 
 const createBook = `-- name: CreateBook :one
-INSERT INTO books (id, isbn, created_at, updated_at, title, author, num_pages, price)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+INSERT INTO books (id, isbn, created_at, updated_at, title, author, num_pages, price, publisher, book_desc)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 RETURNING id, isbn, title, author, num_pages, price, created_at, updated_at, publisher, book_desc
 `
 
@@ -28,6 +28,8 @@ type CreateBookParams struct {
 	Author    string
 	NumPages  int32
 	Price     int32
+	Publisher sql.NullString
+	BookDesc  sql.NullString
 }
 
 func (q *Queries) CreateBook(ctx context.Context, arg CreateBookParams) (Book, error) {
@@ -40,6 +42,8 @@ func (q *Queries) CreateBook(ctx context.Context, arg CreateBookParams) (Book, e
 		arg.Author,
 		arg.NumPages,
 		arg.Price,
+		arg.Publisher,
+		arg.BookDesc,
 	)
 	var i Book
 	err := row.Scan(
