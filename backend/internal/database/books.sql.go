@@ -16,7 +16,7 @@ import (
 const createBook = `-- name: CreateBook :one
 INSERT INTO books (id, isbn, created_at, updated_at, title, author, num_pages, price)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-RETURNING id, isbn, title, author, num_pages, price, created_at, updated_at, publication_day, publication_month, pubilcation_year, publisher, book_desc, format, author_id
+RETURNING id, isbn, title, author, num_pages, price, created_at, updated_at, publisher, book_desc
 `
 
 type CreateBookParams struct {
@@ -51,19 +51,15 @@ func (q *Queries) CreateBook(ctx context.Context, arg CreateBookParams) (Book, e
 		&i.Price,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.PublicationDay,
-		&i.PublicationMonth,
-		&i.PubilcationYear,
 		&i.Publisher,
 		&i.BookDesc,
-		&i.Format,
-		&i.AuthorID,
 	)
 	return i, err
 }
 
 const getBookByTitleAuthor = `-- name: GetBookByTitleAuthor :one
-SELECT id, isbn, title, author, num_pages, price, created_at, updated_at, publication_day, publication_month, pubilcation_year, publisher, book_desc, format, author_id FROM books WHERE title=$1 AND author=$2
+
+SELECT id, isbn, title, author, num_pages, price, created_at, updated_at, publisher, book_desc FROM books WHERE title=$1 AND author=$2
 `
 
 type GetBookByTitleAuthorParams struct {
@@ -71,6 +67,7 @@ type GetBookByTitleAuthorParams struct {
 	Author string
 }
 
+// TODO: update this so that the publisher and the book_desc are added
 func (q *Queries) GetBookByTitleAuthor(ctx context.Context, arg GetBookByTitleAuthorParams) (Book, error) {
 	row := q.db.QueryRowContext(ctx, getBookByTitleAuthor, arg.Title, arg.Author)
 	var i Book
@@ -83,13 +80,8 @@ func (q *Queries) GetBookByTitleAuthor(ctx context.Context, arg GetBookByTitleAu
 		&i.Price,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.PublicationDay,
-		&i.PublicationMonth,
-		&i.PubilcationYear,
 		&i.Publisher,
 		&i.BookDesc,
-		&i.Format,
-		&i.AuthorID,
 	)
 	return i, err
 }

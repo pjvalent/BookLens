@@ -1,8 +1,8 @@
 -- +goose Up
 CREATE TABLE authors (
     id UUID PRIMARY KEY,
-    name TEXT NOT NULL
+    author_name TEXT NOT NULL
 );
 
---  +goose Down
+-- +goose Down
 DROP TABLE authors;
