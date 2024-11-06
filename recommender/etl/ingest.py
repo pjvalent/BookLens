@@ -187,7 +187,7 @@ def ingest_authors(path):
          author_name = author.get('name')
          average_rating = author.get('average_rating')
          author_id = author.get('author_id')
-         text_review_count = author.get('text_review_count')
+         text_review_count = author.get('text_reviews_count')
          ratings_count = author.get('ratings_count')
 
          record = (
