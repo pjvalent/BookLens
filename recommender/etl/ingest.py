@@ -151,11 +151,83 @@ def to_int_zero(value):
           return int(value)
      except (TypeError, ValueError):
           return 0
+     
+
+def ingest_authors(path):
+    """
+    Ingest the authors and populate the author table
+
+    Path: the path to the authors json file
+
+    Returns: n/a
+    """
+
+    author_data = []
+
+    #since the authors file is only ~100mb we just read the whole thing in
+    #each entry of the author data list is a json object
+    with open(path) as f:
+        for line in f:
+            author_data.append(json.loads(line))
+
+    conn = psycopg2.connect(
+            dbname='book_lens',
+            user='postgres',
+            password='password',
+            host='localhost',
+            port='5433'
+        )
+    cursor = conn.cursor()
+    #register uuid's so we can generate and write uuid's
+    psycopg2.extras.register_uuid()
+
+    records = []
+    for author in author_data:
+         id = uuid.uuid4()
+         author_name = author.get('name')
+         average_rating = author.get('average_rating')
+         author_id = author.get('author_id')
+         text_review_count = author.get('text_review_count')
+         ratings_count = author.get('ratings_count')
+
+         record = (
+              id,
+              author_name,
+              average_rating,
+              author_id,
+              text_review_count,
+              ratings_count
+         )
+
+         records.append(record)
+    
+    insert_query = """
+        INSERT INTO authors (
+            id,
+            author_name,
+            average_rating,
+            author_id,
+            text_review_count,
+            ratings_count
+        )
+        VALUES (%s, %s, %s, %s, %s, %s);
+    """
+
+    # Execute batch insert
+    execute_batch(cursor, insert_query, records)
+
+    # Commit changes and close connection
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 
 def main():
-    print("Calling ingest books")
-    ingest_books(5000, '../data/goodreads_books.json')
+    # print("Calling ingest books")
+    # ingest_books(5000, '../data/goodreads_books.json')
+    print("calling ingest authors")
+    ingest_authors('../data/goodreads_book_authors.json')
+
 
 
 if __name__ == "__main__":
