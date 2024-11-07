@@ -5,6 +5,7 @@ import psycopg2.extras
 import uuid
 import datetime
 import re
+import numpy as np
 from psycopg2.extras import execute_batch
 from typing import List, Dict
 # from sentence_transformers import SentenceTransformer
@@ -35,8 +36,18 @@ def ingest_books(batch_size, path):
                      continue #skip this line and proceed to the next one
                 if any(x in book['title'].lower() for x in ["box set", "collection", "bundle"]):
                      continue #skip this line and proceed to the next one
+                
+                #we are now going to push the title/publisher to lowercase, and strip the whitespace from each, then we will check to see if that 
+                #book title and publisher combo already exists in the list, get rid of it if it does. And we add a unique constraint to the 
+                #table unique (title/publisher) so that we only maintain one copy. If we do find duplicates in our efforts, keep the one with
+                #the longer description
 
-                books_list.append(book)
+                if not any(filter(lambda x: x['title'] == book['title'].lower().strip(), books_list)):
+                    books_list.append(book)
+                else:
+                     print("FOUND THE SAME BOOK NAME")
+                     print(book['title'])
+                     exit()
                 
             except json.JSONDecodeError as e:
                 print(f"Error decoding JSON on line {line_number}: {e}")
