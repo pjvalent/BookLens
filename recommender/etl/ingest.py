@@ -6,6 +6,7 @@ import uuid
 import datetime
 import re
 from psycopg2.extras import execute_batch
+from typing import List, Dict
 # from sentence_transformers import SentenceTransformer
 
 
@@ -23,7 +24,6 @@ def ingest_books(batch_size, path):
     with open(path, 'r') as f:
         print("opening file")
         for line_number, line in enumerate(f, start=1):
-            print("Line: ", line_number)
             try:
                 book = json.loads(line)
                 # TODO: need to filter out any entries that are not english, and where the title doesn't exist in the list already
@@ -84,7 +84,8 @@ def process_books(books_list):
         publisher = book.get('publisher')
         book_desc = book.get('description')
         book_format = book.get('format')
-
+        author_id = parse_author_info(book.get('authors'))
+        
 
         record = (
               id,
@@ -100,7 +101,8 @@ def process_books(books_list):
               publication_year,
               publisher,
               book_desc,
-              book_format
+              book_format,
+              author_id
          )
         records.append(record)
 
@@ -119,9 +121,10 @@ def process_books(books_list):
             publication_year,
             publisher,
             book_desc,
-            format
+            format,
+            author_id
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT (isbn) DO UPDATE SET
             author = EXCLUDED.author,
             price = EXCLUDED.price,
@@ -134,7 +137,8 @@ def process_books(books_list):
             publication_year = EXCLUDED.publication_year,
             publisher = EXCLUDED.publisher,
             book_desc = EXCLUDED.book_desc,
-            format = EXCLUDED.format;
+            format = EXCLUDED.format,
+            author_id = EXCLUDED.author_id;
     """
 
     # Execute batch insert
@@ -151,7 +155,21 @@ def to_int_zero(value):
           return int(value)
      except (TypeError, ValueError):
           return 0
-     
+
+
+def parse_author_info(authors: List[Dict[str, int]]) -> int:
+    """
+    Parse the first author form the list of authors of the book. 
+
+    authors: list of authors, each entry being {"author": '00000', "role": "{role}"} 
+                TODO: taking just the first author for now but we want to eventually modify the schema to support multiple authors
+    """
+    if not authors:
+        return 0
+
+    first_author = authors[0]
+    return first_author['author_id']
+
 
 def ingest_authors(path):
     """
@@ -223,10 +241,10 @@ def ingest_authors(path):
 
 
 def main():
-    # print("Calling ingest books")
-    # ingest_books(5000, '../data/goodreads_books.json')
-    print("calling ingest authors")
-    ingest_authors('../data/goodreads_book_authors.json')
+    print("Calling ingest books")
+    ingest_books(5000, '../data/goodreads_books.json')
+    # print("calling ingest authors")
+    # ingest_authors('../data/goodreads_book_authors.json')
 
 
 

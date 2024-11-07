@@ -16,7 +16,7 @@ import (
 const createBook = `-- name: CreateBook :one
 INSERT INTO books (id, isbn, created_at, updated_at, title, author, num_pages, price, publisher, book_desc)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-RETURNING id, isbn, title, author, num_pages, price, created_at, updated_at, publisher, book_desc
+RETURNING id, isbn, title, author, num_pages, price, created_at, updated_at, publisher, book_desc, author_id
 `
 
 type CreateBookParams struct {
@@ -57,13 +57,14 @@ func (q *Queries) CreateBook(ctx context.Context, arg CreateBookParams) (Book, e
 		&i.UpdatedAt,
 		&i.Publisher,
 		&i.BookDesc,
+		&i.AuthorID,
 	)
 	return i, err
 }
 
 const getBookByTitleAuthor = `-- name: GetBookByTitleAuthor :one
 
-SELECT id, isbn, title, author, num_pages, price, created_at, updated_at, publisher, book_desc FROM books WHERE title=$1 AND author=$2
+SELECT id, isbn, title, author, num_pages, price, created_at, updated_at, publisher, book_desc, author_id FROM books WHERE title=$1 AND author=$2
 `
 
 type GetBookByTitleAuthorParams struct {
@@ -86,6 +87,7 @@ func (q *Queries) GetBookByTitleAuthor(ctx context.Context, arg GetBookByTitleAu
 		&i.UpdatedAt,
 		&i.Publisher,
 		&i.BookDesc,
+		&i.AuthorID,
 	)
 	return i, err
 }

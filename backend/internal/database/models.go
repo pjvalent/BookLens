@@ -31,6 +31,7 @@ type Book struct {
 	UpdatedAt time.Time
 	Publisher sql.NullString
 	BookDesc  sql.NullString
+	AuthorID  sql.NullInt64
 }
 
 type BookEmbedding struct {
