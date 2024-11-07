@@ -137,6 +137,7 @@ def process_chunk(chunk_info):
 
         ids = []
         texts = []
+        # TODO: get the book shelf info for all of the books to be embedded as well
         for book in books:
             book_id = book['id']
             title = book['title'] or ''
