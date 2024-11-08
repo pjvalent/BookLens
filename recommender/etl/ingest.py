@@ -27,7 +27,7 @@ def ingest_books(batch_size, path):
         for line_number, line in enumerate(f, start=1):
             try:
                 book = json.loads(line)
-                # TODO: need to filter out any entries that are not english, and where the title doesn't exist in the list already
+                #TODO: need to filter out any entries that are not english, and where the title doesn't exist in the list already
                 #       Reducing the amout that goes to the database is needed
 
                 if book['language_code'] != 'eng':
@@ -42,12 +42,17 @@ def ingest_books(batch_size, path):
                 #table unique (title/publisher) so that we only maintain one copy. If we do find duplicates in our efforts, keep the one with
                 #the longer description
 
-                if not any(filter(lambda x: x['title'] == book['title'].lower().strip(), books_list)):
-                    books_list.append(book)
+                if not any(filter(lambda x: x['title'] == book['title'].lower().strip() 
+                                  and x['publisher'] == book['publisher'].lower().strip(), books_list)): #its gross but it works
+                    
+                    lower_book= {k: v.lower().strip() if k != 'authors' else v for k, v in book.items() if k not in ['popular_shelves', 'series', 'similar_books']}
+                    #store the books in lower, ignore the popular_shelves, series, authors, similar_books
+                    books_list.append(lower_book)
+
                 else:
-                     print("FOUND THE SAME BOOK NAME")
-                     print(book['title'])
-                     exit()
+                    #ignore the book, don't add it to the book list
+                     continue
+   
                 
             except json.JSONDecodeError as e:
                 print(f"Error decoding JSON on line {line_number}: {e}")
@@ -254,8 +259,8 @@ def ingest_authors(path):
 def main():
     print("Calling ingest books")
     ingest_books(5000, '../data/goodreads_books.json')
-    # print("calling ingest authors")
-    # ingest_authors('../data/goodreads_book_authors.json')
+    print("calling ingest authors")
+    ingest_authors('../data/goodreads_book_authors.json')
 
 
 
