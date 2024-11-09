@@ -141,20 +141,7 @@ def process_books(books_list):
             author_id
         )
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (isbn) DO UPDATE SET
-            author = EXCLUDED.author,
-            price = EXCLUDED.price,
-            title = EXCLUDED.title,
-            created_at = EXCLUDED.created_at,
-            updated_at = EXCLUDED.updated_at,
-            num_pages = EXCLUDED.num_pages,
-            publication_day = EXCLUDED.publication_day,
-            publication_month = EXCLUDED.publication_month,
-            publication_year = EXCLUDED.publication_year,
-            publisher = EXCLUDED.publisher,
-            book_desc = EXCLUDED.book_desc,
-            format = EXCLUDED.format,
-            author_id = EXCLUDED.author_id;
+        ON CONFLICT DO NOTHING;
     """
 
     # Execute batch insert
