@@ -175,14 +175,51 @@ def ingest_genres(path: str):
     there can be multiple generes in a single genere:count pair
     We want to 
     """
-    genres = []
+    genres_source = []
+    genres_set = set()
 
     with open(path) as f:
          for line in f:
-              genres.append(f)
+              genres_source.append(json.loads(line))
     
+    for book in genres_source:
+        dict_of_generes = book.get('genres') #this is a dict of genere: num_occurance where the genere can be none, one, or many genres
+        for key in dict_of_generes.keys():
+            genres = [genre.strip() for genre in key.split(',')]
+            genres_set.update(genres) #Update the set with the union of the passed in set
 
 
+    print(sorted(genres_set))
+
+    conn, cursor = db_connect()
+
+    records = []
+    for genre in genres_set:
+        id = uuid.uuid4()
+        genere_name = genre
+
+        record = (
+              id,
+              genere_name
+         )
+        records.append(record)
+
+        insert_query = """
+        INSERT INTO generes (
+            genere_id,
+            genere_name
+        )
+        VALUES (%s, %s)
+        ON CONFLICT DO NOTHING;
+    """
+
+    # Execute batch insert
+    execute_batch(cursor, insert_query, records)
+
+    # Commit changes and close connection
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 
 def parse_author_info(authors: List[Dict[str, int]]) -> int:
@@ -260,10 +297,11 @@ def ingest_authors(path):
 
 
 def main():
-    print("Calling ingest books")
-    ingest_books(5000, '../data/goodreads_books.json')
-    print("calling ingest authors")
-    ingest_authors('../data/goodreads_book_authors.json')
+    ingest_genres('../data/goodreads_book_genres_initial.json')
+    # print("Calling ingest books")
+    # ingest_books(5000, '../data/goodreads_books.json')
+    # print("calling ingest authors")
+    # ingest_authors('../data/goodreads_book_authors.json')
 
 
 
