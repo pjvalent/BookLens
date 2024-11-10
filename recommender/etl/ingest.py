@@ -6,11 +6,26 @@ import uuid
 import datetime
 import re
 import numpy as np
+import os
 from psycopg2.extras import execute_batch
 from typing import List, Dict
 # from sentence_transformers import SentenceTransformer
 
 
+def db_connect():
+    conn = psycopg2.connect(
+        dbname='book_lens',
+        user='postgres',
+        password='password',
+        host='localhost',
+        port='5433'
+    )
+    cursor = conn.cursor()
+
+    psycopg2.extras.register_uuid()
+
+    return conn, cursor
+    
 def normalize_text(text):
      text = text.lower() #lowercase that shiii
      text = re.sub(r'[^a-z0-9\s]', '', text) #remove punctuation
@@ -158,6 +173,23 @@ def to_int_zero(value):
           return int(value)
      except (TypeError, ValueError):
           return 0
+
+
+def ingest_genres(path: str):
+    """
+    Pull the genre info for each book based on id. The genres are a k:v pair
+    Where k is the book id and v is dict of generes and their count {genre: count}
+    there can be multiple generes in a single genere:count pair
+    We want to 
+    """
+    genres = []
+
+    with open(path) as f:
+         for line in f:
+              genres.append(f)
+    
+
+
 
 
 def parse_author_info(authors: List[Dict[str, int]]) -> int:
