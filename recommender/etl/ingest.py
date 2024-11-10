@@ -7,18 +7,20 @@ import datetime
 import re
 import numpy as np
 import os
+from dotenv import load_dotenv
 from psycopg2.extras import execute_batch
 from typing import List, Dict
 # from sentence_transformers import SentenceTransformer
 
+load_dotenv()
 
 def db_connect():
     conn = psycopg2.connect(
-        dbname='book_lens',
-        user='postgres',
-        password='password',
-        host='localhost',
-        port='5433'
+        dbname=os.getenv('DB_NAME'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        host=os.getenv('DB_HOST'),
+        port=os.getenv('DB_PORT')
     )
     cursor = conn.cursor()
 
@@ -88,16 +90,7 @@ def ingest_books(batch_size, path):
 
 
 def process_books(books_list):
-    conn = psycopg2.connect(
-        dbname='book_lens',
-        user='postgres',
-        password='password',
-        host='localhost',
-        port='5433'
-    )
-    cursor = conn.cursor()
-
-    psycopg2.extras.register_uuid()
+    conn, cursor = db_connect()
 
     records = []
     for book in books_list:
@@ -223,16 +216,7 @@ def ingest_authors(path):
         for line in f:
             author_data.append(json.loads(line))
 
-    conn = psycopg2.connect(
-            dbname='book_lens',
-            user='postgres',
-            password='password',
-            host='localhost',
-            port='5433'
-        )
-    cursor = conn.cursor()
-    #register uuid's so we can generate and write uuid's
-    psycopg2.extras.register_uuid()
+    conn, cursor = db_connect()
 
     records = []
     for author in author_data:
