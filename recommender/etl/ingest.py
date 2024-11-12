@@ -8,7 +8,7 @@ import re
 import numpy as np
 import os
 from dotenv import load_dotenv
-from psycopg2.extras import execute_batch
+from psycopg2.extras import execute_batch, Json
 from typing import List, Dict
 # from sentence_transformers import SentenceTransformer
 
@@ -25,12 +25,11 @@ class GenreHandler:
 
     def get_genres(self, book_id):
         genres = self.genres.get(f"{book_id}")
-        print(genres)
         genres_set = set() #ensure only unique values 
         for key in genres.keys():
             temp = [value.strip() for value in key.split(',')] #format the individual keys
             genres_set.update(temp)
-        return sorted(genres_set)
+        return {"genres": sorted(genres_set)}
 
     def _print_genres(self):
         print(self.genres)
@@ -60,7 +59,7 @@ def normalize_text(text):
 def ingest_books(batch_size, path):
     books_list = []
     print("ingesting books")
-
+    genre_handler = GenreHandler()
     with open(path, 'r') as f:
         print("opening file")
         for line_number, line in enumerate(f, start=1):
@@ -100,7 +99,7 @@ def ingest_books(batch_size, path):
 
             if line_number % batch_size == 0:
                     # Process the current batch
-                    process_books(books_list)
+                    process_books(books_list, genre_handler)
                     # Clear the list for the next batch
                     books_list = []
 
@@ -108,10 +107,10 @@ def ingest_books(batch_size, path):
                     print(f"Processed {line_number} lines...")
 
         if books_list:
-            process_books(books_list)
+            process_books(books_list, genre_handler)
 
 
-def process_books(books_list):
+def process_books(books_list, genre_handler):
     conn, cursor = db_connect()
 
     records = []
@@ -131,7 +130,8 @@ def process_books(books_list):
         book_desc = book.get('description')
         book_format = book.get('format')
         author_id = parse_author_info(book.get('authors'))
-        
+        genres = genre_handler.get_genres(book_id=book['book_id'])
+        genres_json = Json(genres)
 
         record = (
               id,
@@ -148,7 +148,8 @@ def process_books(books_list):
               publisher,
               book_desc,
               book_format,
-              author_id
+              author_id,
+              genres_json
          )
         records.append(record)
 
@@ -168,9 +169,10 @@ def process_books(books_list):
             publisher,
             book_desc,
             format,
-            author_id
+            author_id,
+            genres
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT DO NOTHING;
     """
 
@@ -210,8 +212,6 @@ def ingest_genres(path: str):
             genres = [genre.strip() for genre in key.split(',')]
             genres_set.update(genres) #Update the set with the union of the passed in set
 
-
-    print(sorted(genres_set))
 
     conn, cursor = db_connect()
 
@@ -319,14 +319,14 @@ def ingest_authors(path):
 
 
 def main():
-    genre_handler = GenreHandler()
-    genres = genre_handler.get_genres(29360997)
-    print(genres)
+    # genre_handler = GenreHandler()
+    # genres = genre_handler.get_genres(29360997)
+    # print(genres)
     #'29360997': {'fantasy, paranormal': 158, 'mystery, thriller, crime': 53, 'fiction': 23}
 
     # ingest_genres('../data/goodreads_book_genres_initial.json')
-    # print("Calling ingest books")
-    # ingest_books(5000, '../data/goodreads_books.json')
+    print("Calling ingest books")
+    ingest_books(5000, '../data/goodreads_books.json')
     # print("calling ingest authors")
     # ingest_authors('../data/goodreads_book_authors.json')
 
