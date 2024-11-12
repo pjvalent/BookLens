@@ -14,6 +14,28 @@ from typing import List, Dict
 
 load_dotenv()
 
+class GenreHandler:
+    def __init__(self):
+        """ initialize the genres dictionary """
+        self.genres = {}
+        with open('../data/goodreads_book_genres_initial.json') as f:
+            for line in f:
+                obj = json.loads(line)
+                self.genres[obj['book_id']] = obj['genres']
+
+    def get_genres(self, book_id):
+        genres = self.genres.get(f"{book_id}")
+        print(genres)
+        genres_set = set() #ensure only unique values 
+        for key in genres.keys():
+            temp = [value.strip() for value in key.split(',')] #format the individual keys
+            genres_set.update(temp)
+        return sorted(genres_set)
+
+    def _print_genres(self):
+        print(self.genres)
+
+
 def db_connect():
     conn = psycopg2.connect(
         dbname=os.getenv('DB_NAME'),
@@ -297,7 +319,12 @@ def ingest_authors(path):
 
 
 def main():
-    ingest_genres('../data/goodreads_book_genres_initial.json')
+    genre_handler = GenreHandler()
+    genres = genre_handler.get_genres(29360997)
+    print(genres)
+    #'29360997': {'fantasy, paranormal': 158, 'mystery, thriller, crime': 53, 'fiction': 23}
+
+    # ingest_genres('../data/goodreads_book_genres_initial.json')
     # print("Calling ingest books")
     # ingest_books(5000, '../data/goodreads_books.json')
     # print("calling ingest authors")
