@@ -23,9 +23,14 @@ def handle_popular_shelves(shelves: List[Dict[str, str]]) -> List[str]:
 
     unique_shelves = set() #sets ensure uniqueness when adding elements
 
+    list_of_bad_shelves = ['read', 'school', 'grade', 'chick-lit', '2009-books', 'chicklit', 'owned', 'borrowed', 'library', 'hardcover', 'books-i-own', 'on-my-shelf', 'on-the-shelf']
+
     for entry in shelves:
         if int(entry.get('count')) < 1:
             # book is on a shelf less than one time which is not possible, dont add shelf to the set
+            continue
+        shelf = entry.get('name').lower().strip()
+        if any(word in shelf for word in list_of_bad_shelves):
             continue
         unique_shelves.add(entry.get('name').lower().strip()) #lowercase and strip the whitespace
 
