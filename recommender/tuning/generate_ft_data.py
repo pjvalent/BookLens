@@ -10,17 +10,25 @@ import re
 from typing import List, Dict
 
 
-def handle_popular_shelves(book) -> List[str]:
+def handle_popular_shelves(shelves: List[Dict[str, str]]) -> List[str]:
     """
     Parse and clean the data that is in the 'popular_shelves' entry of the book
     Should get each of the unique popular shelves that a book has been put in.
     Should filter out any shelves that are 'to read' 'reading' 'currently reading' etc...
 
-    book: the book to process
+    shelves: list of k:v pairs, usually {'count':'#', 'name':'{shelve}'}
 
-    returns: 
+    returns: a list of all the unique shelves that a book belongs to
     """
 
+    unique_shelves = set() #sets ensure uniqueness when adding elements
+
+    for entry in shelves:
+        if entry.get('count') < 1:
+            # book is on a shelf less than one time which is not possible, dont add shelf to the set
+            continue
+        unique_shelves.add(entry.get('name').lower().strip()) #lowercase and strip the whitespace
+    return sorted(unique_shelves)
 
 
 
